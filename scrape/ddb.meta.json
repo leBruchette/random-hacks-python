@@ -1,0 +1,70 @@
+{
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "pk_usac_or_event_id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "sk_result",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "gsipk_results_or_discipline",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "gsisk_usac_or_event_id",
+      "AttributeType": "S"
+    }
+  ],
+  "CreationDateTime": "2025-02-11T17:52:06.774Z",
+  "DeletionProtectionEnabled": false,
+  "GlobalSecondaryIndexes": [
+    {
+      "IndexArn": "arn:aws:dynamodb:ddblocal:000000000000:table/results/index/result_by_id_or_discipline_by_type",
+      "IndexName": "result_by_id_or_discipline_by_type",
+      "IndexSizeBytes": 0,
+      "IndexStatus": "ACTIVE",
+      "ItemCount": 0,
+      "KeySchema": [
+        {
+          "AttributeName": "gsipk_results_or_discipline",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "gsisk_usac_or_event_id",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      },
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 3,
+        "WriteCapacityUnits": 3
+      }
+    }
+  ],
+  "ItemCount": 230,
+  "KeySchema": [
+    {
+      "AttributeName": "pk_usac_or_event_id",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "sk_result",
+      "KeyType": "RANGE"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "LastDecreaseDateTime": "1970-01-01T00:00:00.000Z",
+    "LastIncreaseDateTime": "1970-01-01T00:00:00.000Z",
+    "NumberOfDecreasesToday": 0,
+    "ReadCapacityUnits": 3,
+    "WriteCapacityUnits": 3
+  },
+  "TableArn": "arn:aws:dynamodb:ddblocal:000000000000:table/results",
+  "TableName": "results",
+  "TableSizeBytes": 61163,
+  "TableStatus": "ACTIVE"
+}
