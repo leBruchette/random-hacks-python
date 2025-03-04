@@ -1,4 +1,5 @@
 import argparse
+import json
 import requests
 from bs4 import BeautifulSoup
 from dataclasses import dataclass
@@ -48,6 +49,12 @@ def is_event_row():
 parser = argparse.ArgumentParser(
     description='Scrapes race results from usa cycling dot org for a given rider\'s license number')
 parser.add_argument('id', type=int, help='license number to scrape results for')
+
+with open ('members.json', 'r') as file:
+    members = json.load(file)
+    for member in members:
+        compid = member['usacId']
+
 args = parser.parse_args()
 url = ("https://{sub}.{domain1}{domain2}.{suffix}/results/index.php?{queryParm}={id}"
        .format(sub='legacy',
