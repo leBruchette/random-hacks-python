@@ -1,10 +1,7 @@
 import argparse
-<<<<<<< HEAD
-import json
-=======
 import boto3
 import datetime
->>>>>>> 923ea3a (unignored hubspot interview)
+
 import requests
 from bs4 import BeautifulSoup
 from dataclasses import dataclass
@@ -13,10 +10,6 @@ from dataclasses_json import dataclass_json
 
 @dataclass_json
 @dataclass
-<<<<<<< HEAD
-=======
-
->>>>>>> 923ea3a (unignored hubspot interview)
 class Event:
     date: str
     name: str
