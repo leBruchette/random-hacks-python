@@ -1,0 +1,1 @@
+/results/index.php?year=<four digit year>&id=<some numeric string>

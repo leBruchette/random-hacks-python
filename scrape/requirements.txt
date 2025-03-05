@@ -1,0 +1,7 @@
+boto3
+requests
+selenium
+beautifulsoup4
+dataclasses
+dataclasses-json
+python-dotenv

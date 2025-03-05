@@ -129,4 +129,8 @@ cython_debug/
 # VS Code
 .vscode/
 
+#interviews/
 .DS_Store
+
+/scrape/events/data/
+/scrape/members/data/
