@@ -1,11 +1,14 @@
 import argparse
-import boto3
 import datetime
-
 import requests
+
 from bs4 import BeautifulSoup
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
+from sources import dynamodb as _dynamodb
+from dotenv import load_dotenv
+load_dotenv()
+
 
 
 @dataclass_json
@@ -49,8 +52,7 @@ def is_event_row():
 
 
 parser = argparse.ArgumentParser(
-    description='Scrapes race results from usa cycling dot org for a given rider\'s license number')
-# parser.add_argument('id', type=int, help='license number to scrape results for')
+    description='Scrapes race results for a givenlicense number')
 parser.add_argument('id', type=int, nargs='+', help='license numbers to scrape results for')
 
 args = parser.parse_args()
@@ -65,9 +67,8 @@ for url in urls:
     print(f"Scraping {url}")
     response = requests.get(url)
     if response.status_code == 200:
-        dynamodb = boto3.resource('dynamodb', endpoint_url='http://0.0.0.0:8000', aws_access_key_id='AKIA2BOGUSAWSKEYJ2QW',
-                                  aws_secret_access_key='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', region_name='us-east-1')
-        ddb_table = dynamodb.Table('results')
+
+        ddb_table = _dynamodb.Table('results')
 
         soup = BeautifulSoup(response.content, 'html.parser')
         results = []
@@ -80,14 +81,6 @@ for url in urls:
             exit(0)
         for row in table[0].find_all('tr'):
             if is_race_result_hydrated():
-                # ddb_table.put_item(
-                #     Item= {
-                #         'usac_date': "{usac}#{date}#{discipline}".format(usac=current_result.result.license, date=str(current_result.event.date), discipline=current_result.event.discipline),
-                #         'event': current_result.event.__dict__,
-                #         'result': current_result.result.__dict__
-                #     }
-                # )
-
                 usac_profile = {
                     'pk_usac_or_event_id': 'USAC#' + str(current_result.result.license),
                     'sk_result': 'PROFILE',
@@ -97,13 +90,14 @@ for url in urls:
                     'club': current_result.result.club,
                 }
                 try:
-                    ddb_table.put_item(Item=usac_profile, ConditionExpression='attribute_not_exists(pk_usac_or_event_id)')
+                    ddb_table.put_item(Item=usac_profile,
+                                       ConditionExpression='attribute_not_exists(pk_usac_or_event_id)')
                 except ddb_table.meta.client.exceptions.ConditionalCheckFailedException:
-                    pass #going to ignore and only write a profile once
+                    pass  # going to ignore and only write a profile once
 
                 user_result = {
                     'pk_usac_or_event_id': 'USAC#' + str(current_result.result.license),
-                    'sk_result': 'RESULT#' + str(current_result.event.date)+"#"+str(current_result.event.permit),
+                    'sk_result': 'RESULT#' + str(current_result.event.date) + "#" + str(current_result.event.permit),
                     'type': 'RESULT',
                     'discipline': current_result.event.discipline.upper(),
                     'name': current_result.event.name,
@@ -137,7 +131,8 @@ for url in urls:
 
                 event_results = {
                     'pk_usac_or_event_id': 'EVENT#' + str(current_result.event.permit),
-                    'sk_result': 'RESULT#' + str(current_result.event.date)+"#"+str(current_result.event.permit)+"#"+str(current_result.result.license),
+                    'sk_result': 'RESULT#' + str(current_result.event.date) + "#" + str(
+                        current_result.event.permit) + "#" + str(current_result.result.license),
                     'type': 'EVENTRESULTS',
                     'discipline': current_result.event.discipline.upper(),
                     'timestamp': current_result.event.date,

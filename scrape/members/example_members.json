@@ -1,0 +1,23 @@
+[
+  {
+    "rank": 1,
+    "name": "Some Member",
+    "age": 24,
+    "city": "Austin, TX",
+    "usacId": "123456"
+  },
+  {
+    "rank": 2,
+    "name": "Another Member",
+    "age": 23,
+    "city": "Austin, TX",
+    "usacId": "321654"
+  },
+  {
+    "rank": 3,
+    "name": "Third Member",
+    "age": 28,
+    "city": "Superior, CO",
+    "usacId": "987654"
+  }
+]

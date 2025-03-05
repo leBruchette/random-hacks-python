@@ -4,16 +4,24 @@ from selenium.webdriver.chrome.service import Service
 import os
 import time
 
+# Script that uses selenium to scrape the results of events from addresses stored in events.txt
+# The results are stored in a directory named after the event permit id for later processing
+
+
 service = Service('/opt/homebrew/bin/chromedriver')
 driver = webdriver.Chrome(service=service)
 
-
 # Open the URL
-with open('events.txt', 'r') as file:
+with open('data/events.txt', 'r') as file:
     for event_year_and_id in file:
         print(F'processing {event_year_and_id}')
         event_permit = event_year_and_id.replace("/results/index.php?year=", "").replace("&id=", "-")
-        url = f'https://legacy.usacycling.org/results/index.php?permit={event_permit}'
+        url = "https://{sub}.{domain1}{domain2}.{suffix}/results/index.php?permit={permit}".format(sub='legacy',
+                                                                                                   domain1='usa',
+                                                                                                   domain2='cycling',
+                                                                                                   suffix='org',
+                                                                                                   permit=event_permit)
+
         driver.get(url)
         # Give the page time to load
         time.sleep(3)
@@ -42,7 +50,9 @@ with open('events.txt', 'r') as file:
                 with open(os.path.join(event_dir, f'{subevent_id}.txt'), 'a') as file:
                     file.write(f'-----\n{onclick_value.split("'")[1]}\n')
 
-                sub_event_anchor = driver.find_element(By.CSS_SELECTOR, 'a[href="javascript:void(0)"][onclick="{onclick}"]'.format(onclick=onclick_value))
+                sub_event_anchor = driver.find_element(By.CSS_SELECTOR,
+                                                       'a[href="javascript:void(0)"][onclick="{onclick}"]'.format(
+                                                           onclick=onclick_value))
                 # Click to load the sub-event
                 sub_event_anchor.click()
                 time.sleep(1)  # Give time for content to load
@@ -79,5 +89,5 @@ with open('events.txt', 'r') as file:
                     except Exception as e:
                         print(f'Could not scrape license from anchor: {e}')
         print(f'Finished processing {event_year_and_id}')
-    # Close the browser
+# Close the browser
 driver.quit()

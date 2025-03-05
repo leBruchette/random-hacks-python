@@ -1,7 +1,7 @@
 import json
 
 
-with open('members.csv', 'r') as file:
+with open('example_members.csv', 'r') as file:
     bulk_data = []
     total_count = 0
     for line in file:
@@ -16,6 +16,6 @@ with open('members.csv', 'r') as file:
             "usacId": member_record[4],
             })
 
-with open('members.json', 'a') as json_file:
+with open('example_members.json', 'a') as json_file:
     json.dump(bulk_data, json_file)
 

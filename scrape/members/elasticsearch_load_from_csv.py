@@ -1,14 +1,21 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
+import os
+
 import requests
 import json
 import random
 import time
 
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Create a new Elasticsearch index
 index_name = 'members'
-es_url = f'http://localhost:9200'
+es_url = os.getenv('ELASTIC_URL')
+es_token = os.getenv('ELASTIC_AUTH_TOKEN')
 
 # Define the index settings and mappings
 # really looking for auto-completion on user names, first and last...
@@ -32,17 +39,17 @@ index_settings = {
 }
 
 # Delete the index
-response = requests.delete(f'{es_url}/{index_name}', headers={"Content-Type": "application/json",
-                                                              "Authorization": "ApiKey cmpMMkFKVUJsM2lIcm0xX3pfV1M6VGlxVUJTRE1ReXU4V0M0UHNZM1hMZw=="})
+response = requests.delete(f'{es_url}/{index_name}',
+                           headers={"Content-Type": "application/json", "Authorization": f"ApiKey {es_token}"})
 print(f'Index deletion response: {response.json()}')
 
 # Create the index
-response = requests.put(f'{es_url}/{index_name}', headers={"Content-Type": "application/json",
-                                                           "Authorization": "ApiKey cmpMMkFKVUJsM2lIcm0xX3pfV1M6VGlxVUJTRE1ReXU4V0M0UHNZM1hMZw=="},
+response = requests.put(f'{es_url}/{index_name}',
+                        headers={"Content-Type": "application/json", "Authorization": f"ApiKey {es_token}"},
                         data=json.dumps(index_settings))
 print(f'Index creation response: {response.json()}')
 
-with open('members.csv', 'r') as file:
+with open('data/members.csv', 'r') as file:
     bulk_data = []
     total_count = 0
     for line in file:
@@ -72,8 +79,8 @@ with open('members.csv', 'r') as file:
         # document["all"] = json.dumps(document)
         bulk_data.append(document)
         if len(bulk_data) >= 500:
-            response = requests.post(f'{es_url}/_bulk', headers={"Content-Type": "application/json",
-                                                                 "Authorization": "ApiKey cmpMMkFKVUJsM2lIcm0xX3pfV1M6VGlxVUJTRE1ReXU4V0M0UHNZM1hMZw=="},
+            response = requests.post(f'{es_url}/_bulk',
+                                     headers={"Content-Type": "application/json", "Authorization": f"ApiKey {es_token}"},
                                      data='\n'.join(json.dumps(d) for d in bulk_data) + '\n')
             total_count += len(bulk_data)
             print(f'Total written: {int(total_count / 2)}...')

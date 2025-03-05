@@ -131,3 +131,6 @@ cython_debug/
 
 #interviews/
 .DS_Store
+
+/scrape/events/data/
+/scrape/members/data/
